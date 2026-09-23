@@ -1,0 +1,7 @@
+# Ambiente virtual (se o Everton optar por usar um)
+venv/
+.venv/
+
+# PDFs e Markdown que o Everton for colocando/gerando na pasta de trabalho
+a_converter/*
+!a_converter/.gitkeep

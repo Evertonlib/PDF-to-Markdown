@@ -187,17 +187,20 @@ O PDF de exemplo (`PES_TEC_SOC_COMP_ACE_2021.pdf`) permanece na raiz, fora de `a
 
 ## Plano de Execução
 
-- [ ] Task 1 — Criar `a_converter/.gitkeep` e `.gitignore` conforme seções 4 e 5.
-- [ ] Task 2 — Criar `requirements.txt` com `pymupdf4llm` pinado na versão mais recente disponível (confirmar versão exata no PyPI no momento da implementação).
-- [ ] Task 3 — Implementar `listar_pdfs()` em `converter.py` e testar manualmente com a pasta `a_converter/` vazia e com PDFs de exemplo.
-- [ ] Task 4 — Implementar `exibir_menu()`, `obter_escolha()` e `perguntar_sim_nao()`, e testar manualmente a navegação (entradas válidas e inválidas).
-- [ ] Task 5 — Implementar `validar_abertura()` e testar com um PDF válido, um corrompido (ex. renomear um arquivo não-PDF para `.pdf`) e, se possível, um PDF protegido por senha.
-- [ ] Task 6 — Implementar `converter_um()` (chamada a `pymupdf4llm.to_markdown()` com comportamento padrão, gravação do `.md`, verificação de conteúdo vazio) e testar com o PDF de exemplo `PES_TEC_SOC_COMP_ACE_2021.pdf` movido para `a_converter/`.
-- [ ] Task 7 — Implementar `imprimir_resumo()` e `main()`, cobrindo os três fluxos (um PDF, todos os PDFs, pasta vazia/saída sem converter). Testar especificamente via duplo clique em `converter.py` (não só rodando pelo terminal), confirmando que o menu funciona normalmente e que a janela fecha sozinha ao final, sem pausa.
-- [ ] Task 8 — Rodar manualmente os 11 critérios de aceitação do PRD (seção 12), incluindo o teste de reprodutibilidade da premissa 9 (converter o mesmo PDF duas vezes e comparar o `.md` gerado byte a byte).
-- [ ] Task 9 — Escrever `README.md` conforme seção 6 desta Spec.
-- [ ] Task 10 — Revisão final: confirmar que nenhum arquivo fora da pasta do projeto foi lido/criado/modificado, revisar `git status` e propor texto de commit ao Everton.
+- [x] Task 1 — Criar `a_converter/.gitkeep` e `.gitignore` conforme seções 4 e 5.
+- [x] Task 2 — Criar `requirements.txt` com `pymupdf4llm` pinado na versão mais recente disponível (confirmar versão exata no PyPI no momento da implementação).
+- [x] Task 3 — Implementar `listar_pdfs()` em `converter.py` e testar manualmente com a pasta `a_converter/` vazia e com PDFs de exemplo.
+- [x] Task 4 — Implementar `exibir_menu()`, `obter_escolha()` e `perguntar_sim_nao()`, e testar manualmente a navegação (entradas válidas e inválidas).
+- [x] Task 5 — Implementar `validar_abertura()` e testar com um PDF válido, um corrompido (ex. renomear um arquivo não-PDF para `.pdf`) e, se possível, um PDF protegido por senha.
+- [x] Task 6 — Implementar `converter_um()` (chamada a `pymupdf4llm.to_markdown()` com comportamento padrão, gravação do `.md`, verificação de conteúdo vazio) e testar com o PDF de exemplo `PES_TEC_SOC_COMP_ACE_2021.pdf` movido para `a_converter/`.
+- [x] Task 7 — Implementar `imprimir_resumo()` e `main()`, cobrindo os três fluxos (um PDF, todos os PDFs, pasta vazia/saída sem converter). Testar especificamente via duplo clique em `converter.py` (não só rodando pelo terminal), confirmando que o menu funciona normalmente e que a janela fecha sozinha ao final, sem pausa.
+- [x] Task 8 — Rodar manualmente os 11 critérios de aceitação do PRD (seção 12), incluindo o teste de reprodutibilidade da premissa 9 (converter o mesmo PDF duas vezes e comparar o `.md` gerado byte a byte).
+- [x] Task 9 — Escrever `README.md` conforme seção 6 desta Spec.
+- [x] Task 10 — Revisão final: confirmar que nenhum arquivo fora da pasta do projeto foi lido/criado/modificado, revisar `git status` e propor texto de commit ao Everton.
 
 ## Desvios
 
-(vazio — a ser preenchido durante a implementação)
+- **Bug de encoding descoberto e corrigido (não previsto na Spec original).** No Windows, sem configuração explícita, `sys.stdout` do Python usa a codepage ANSI (`cp1252`), enquanto o console (`cmd.exe` aberto por duplo clique) costuma abrir em outra codepage (ex. `850`). Isso corrompia acentos nos textos de terminal (`Opção`, `Concluído`, etc.). Corrigido em `converter.py` adicionando, logo no topo do script: `os.system("chcp 65001 > nul")` + `sys.stdout.reconfigure(encoding="utf-8")` + `sys.stdin.reconfigure(encoding="utf-8")` (só no Windows, via `sys.platform == "win32"`). Testado manualmente forçando a codepage do terminal para 65001 e confirmando que os acentos aparecem corretos.
+- **Reprodutibilidade (premissa 9 / critério de aceitação 9) testada e confirmada na prática**, não só esperada: `PES_TEC_SOC_COMP_ACE_2021.pdf` convertido duas vezes gerou `.md` byte a byte idêntico (`diff` sem diferenças).
+- **PDF de exemplo movido para dentro de `a_converter/`**, conforme premissa 8 da PRD. Consequência observada: como `a_converter/*` está no `.gitignore`, o Git passa a ver `PES_TEC_SOC_COMP_ACE_2021.pdf` como removido da raiz (estava versionado ali) e não vai re-adicioná-lo do novo local — é esperado, o arquivo continua no disco, só sai do controle de versão. Sinalizado aqui para não ser confundido com perda de arquivo ao revisar o `git status`.
+- Nenhum outro desvio do Plano de Execução: as 9 primeiras tasks foram implementadas e testadas manualmente cobrindo os 11 critérios de aceitação do PRD (conversão única, em lote, pasta vazia, sobrescrita, senha, corrompido, PDF sem texto, nenhum caminho digitado, reprodutibilidade, isolamento, aviso de tamanho de download).
