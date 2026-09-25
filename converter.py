@@ -5,6 +5,25 @@ from pathlib import Path
 import pymupdf
 import pymupdf4llm
 
+try:
+    from pymupdf4llm.ocr import rapidocr_onnx_backend as _rapidocr_backend
+
+    def _full_ocr_sem_crash(img):
+        # Contorno para bug do pymupdf4llm 1.28.2: quando o RapidOCR nao
+        # encontra nenhum texto numa pagina, o engine retorna results=None
+        # e a funcao original do pymupdf4llm quebra ao tentar iterar sobre
+        # None. Tratamos esse caso como "nenhum texto encontrado" (lista
+        # vazia), igual ao que ja acontece quando ha poucos resultados.
+        engine = _rapidocr_backend.init_engine()
+        resultados, _tempos = engine(img)
+        if not resultados:
+            return []
+        return [(box, texto, float(score)) for box, texto, score in resultados]
+
+    _rapidocr_backend.full_ocr = _full_ocr_sem_crash
+except ImportError:
+    pass
+
 if sys.platform == "win32":
     os.system("chcp 65001 > nul")
     sys.stdout.reconfigure(encoding="utf-8")
